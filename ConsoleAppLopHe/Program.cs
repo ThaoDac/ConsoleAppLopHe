@@ -135,7 +135,7 @@ namespace ConsoleAppLopHe
                                     dataView.RowFilter = "bGioiTinh = '1' ";
                                     dataView.Sort = "dNgaySinh ASC";
 
-                                    //hien thi du lieu ra man hinh
+                                    //hien thi du lieu ra man hinh 
                                     foreach (DataRowView row in dataView)
                                     {
                                         Console.WriteLine("{0}\t{1}\t{3}",

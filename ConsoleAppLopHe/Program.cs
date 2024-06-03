@@ -111,5 +111,48 @@ namespace ConsoleAppLopHe
                 }
             }
         }
+
+        private static void HienThiDSSVngatketnoi(string connectionString)
+        {
+            string queryStr = "SELECT_tblSINHVIEN";
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                using(SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = queryStr;
+                    cmd.CommandType= CommandType.StoredProcedure;
+                    using(SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.SelectCommand = cmd;
+                        using(DataTable dt = new DataTable())
+                        {
+                            adapter.Fill(dt);
+                            if(dt.Rows.Count > 0)
+                            {
+                                //khoi tao dataview
+                                using(DataView dataView = new DataView(dt))
+                                {
+                                    dataView.RowFilter = "bGioiTinh = '1' ";
+                                    dataView.Sort = "dNgaySinh ASC";
+
+                                    //hien thi du lieu ra man hinh
+                                    foreach (DataRowView row in dataView)
+                                    {
+                                        Console.WriteLine("{0}\t{1}\t{3}",
+                                                                row["sMaSV"],
+                                                                row["dNgaySinh"],
+                                                                row["bGioiTinh"]);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //khong ton tai ban ghi nao
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

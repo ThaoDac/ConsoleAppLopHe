@@ -154,5 +154,57 @@ namespace ConsoleAppLopHe
                 }
             }
         }
+
+        private static bool ThemSinhVienNgatKetNoi(string connectionString, string masv, string ngaysinh, bool gioitinh)
+        {
+            string proInsert = "INSERT_tblSINHVIEN";
+            string querySelect = "SELECT_tblSINHVIEN";
+            using(SqlConnection conn = new SqlConnection (connectionString))
+            {
+                using(SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = querySelect;
+                    cmd.CommandType= CommandType.StoredProcedure;
+                    using(SqlDataAdapter adapter = new SqlDataAdapter())
+                    {
+                        adapter.SelectCommand = cmd;
+                        using(DataTable tblSINHVIEN = new DataTable("tblSINHVIEN"))
+                        {
+                            adapter.Fill(tblSINHVIEN);
+                            //add tung datatable vao dataset
+                            DataSet dataSet = new DataSet();
+                            dataSet.Tables.Add(tblSINHVIEN);
+
+                            //them moi ban ghi vao datatable
+                            DataRow newRow = tblSINHVIEN.NewRow();
+                            newRow["sMaSV"] = masv;
+                            newRow["dNgaySinh"] = ngaysinh;
+                            newRow["bGioiTinh"] = gioitinh;
+                            //khai bao day du cac truong du lieu cua 1 ban ghi
+                            tblSINHVIEN.Rows.Add(newRow);
+
+                            //tim khoa chinh cua ban ghi trong datatable
+                            tblSINHVIEN.PrimaryKey = new DataColumn[] { tblSINHVIEN.Columns["sMasv"] };
+                            DataRow dataRow = tblSINHVIEN.Rows.Find(masv);
+                            //xoa ban ghi
+                            dataRow.Delete();
+                            //sua ban ghi
+                            dataRow["dNgaySinh"] = ngaysinh;
+                            dataRow["bGioiTinh"] = gioitinh;
+
+                            //Dong bo du lieu len SQL Server thong qua InsertCommand
+                            cmd.CommandText = proInsert;
+                            cmd.Parameters.Clear();
+                            cmd.Parameters.AddWithValue("maSV", masv);
+                            //khai bao day du cac parameter co trong procedure
+
+                            adapter.InsertCommand = cmd;
+                            int i = adapter.Update(dataSet, "tblSINHVIEN");
+                            return i > 0;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
